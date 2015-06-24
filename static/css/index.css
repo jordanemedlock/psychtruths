@@ -1,0 +1,52 @@
+
+.affix {
+  position: fixed;
+  top:25px;
+}
+
+#nav {
+  font-size: 12pt;
+}
+
+.navbar-form input, .form-inline input {
+  width: auto;
+  background-color: rgba(10%,10%,10%, 0.5);
+  border: none;
+  color: white;
+  font-weight: bold;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.navbar-form input:focus {
+  background-color: rgba(5%,5%,5%, 0.7);
+}
+
+.tag-btn:hover {
+  color: #222;
+  text-decoration: underline;
+}
+.tag-btn {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.post-preview {
+  background-color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+body {
+  background-color: #F1F1F1;
+}
+
+ul.pager {
+  margin-bottom: 10px;
+}
+.nowrap {
+  white-space: nowrap;
+}

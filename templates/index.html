@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <nav>
+                    <ul class="pager">
+                        {% if has_prev %}
+                            <li class="previous">
+                                <a href="/{{page-1}}">
+                                    <span aria-hidden="true">&larr;</span> Newer
+                                </a>
+                            </li>
+                        {% end %}
+                        {% if has_next %}
+                            <li class="next">
+                                <a href="/{{page+1}}">
+                                    Older <span aria-hidden="true">&rarr;</span>
+                                </a>
+                            </li>
+                        {% end %}
+                    </ul>
+                </nav>
+                {% for post in blog_posts %}
+                    <div class="post-preview" id="{{ post['slug'] }}">
+                        {% if post['type'] == 'text' %}
+                            {% if post['title'] is not None %}
+                                <h2 class="post-title">
+                                    {{ post['title'] }}
+                                </h2>
+                            {% end %}
+                            <p class="post-subtitle">
+                                {% raw post['body'] %}
+                            </p>
+                        {% elif post['type'] == 'photo' %}
+                            {% for photo in post['photos'] %}
+                                <img src="{{ photo['original_size']['url'] }}" />
+                            {% end %}
+                        {% elif post['type'] == 'quote' %}
+                                {% raw post['source'] %}
+                        {% elif post['type'] == 'link' %}
+                            <h2 class="post-title">
+                                {{ post['title'] }}
+                            </h2>
+                            <p class="post-subtitle">
+                                {% raw post['excerpt'] %}
+                            </p>
+                        {% elif post['type'] == 'chat' %}
+                            <h2 class="post-title">
+                                {{ post['title'] }}
+                            </h2>
+                            <p class="post-subtitle">
+                                {% raw post['body'] %}
+                            </p>
+                        {% elif post['type'] == 'answer' %}
+                            <h2 class="post-title">
+                                {{ post['asking_name'] }}
+                            </h2>
+                            <p class="post-subtitle">
+                                {% raw post['question'] %}
+                            </p>
+                        {% else %}
+                            {{ 'cant handle format', post['type'] }}
+                        {% end %} <!-- Still missing, audio, video, answer-->
+
+                        <p class="post-meta">Posted by {{ post['blog_name'] }} on {{ post['date'] }}</p>
+                        <p class="post-meta">Tags:
+                            <ul class="tags list-inline">
+                                {% for tag in post['tags'] %}
+                                    <li>
+                                        <a href="/tag/{{ tag }}">{{ tag }}</a>
+                                    </li>
+                                {% end %}
+                            </ul>
+                        </p>
+                    </div>
+                    <hr>
+                {% end %}
+                <nav>
+                    <ul class="pager">
+                        {% if has_prev %}
+                            <li class="previous">
+                                <a href="/{{page-1}}">
+                                    <span aria-hidden="true">&larr;</span> Newer
+                                </a>
+                            </li>
+                        {% end %}
+                        {% if has_next %}
+                            <li class="next">
+                                <a href="/{{page+1}}">
+                                    Older <span aria-hidden="true">&rarr;</span>
+                                </a>
+                            </li>
+                        {% end %}
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-md-2">
+                <ul class="nav nav-pill nav-stacked hidden-sm hidden-xs" id="nav" data-spy="affix" data-offset-top="410">
+                    {% for post in blog_posts %}
+                        {% if 'title' in post and post['title'] is not None %}
+                            <li>
+                                <a href="#{{ post['slug'] }}">
+                                    {{ post['title'] }}
+                                </a>
+                            </li>
+                        {% end %}
+                    {% end %}
+                    <li>
+                        <a href="#top">
+                            Back to top
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% end %}
