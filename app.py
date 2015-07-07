@@ -1,11 +1,18 @@
 import tornado.ioloop
 import tornado.web
+import time
 from temboo.Library.Tumblr.Post import RetrievePublishedPosts
 from temboo.core.session import TembooSession
 from tornado.escape import json_decode, json_encode
 
 session = TembooSession("jordanemedlock", "PsychTruths", "SFiEEZ8RCnzX8U8nSAbsM0QII3gcEZl6")
 choreo = RetrievePublishedPosts(session)
+
+
+
+def formatTime(t):
+  t = time.gmtime(t)
+  return time.strftime('%A, %B %e, %Y',t)
 
 def readJSON(fileName):
   f = open(fileName)
@@ -49,13 +56,15 @@ def getPosts(page, update=True, tag=None, query=None):
     choreo_inputs = choreo.new_input_set()
 
     choreo_inputs.set_APIKey("u06kxugAWrGDtTxfU5IikKXg8oXyfFO8JqabS5HDyq3qPYquHH")
-    choreo_inputs.set_BaseHostname("psychologyfacts.tumblr.com")
+    choreo_inputs.set_BaseHostname("psychologytruths.tumblr.com")
     choreo_inputs.set_Limit("10")
     choreo_inputs.set_Offset(str(page * 10))
 
     results = choreo.execute_with_results(choreo_inputs)
 
     results = json_decode(results.get_Response())
+
+
 
     return results['response']['posts'], results['response']['total_posts']
   else:
@@ -87,7 +96,8 @@ class BlogHandler(tornado.web.RequestHandler):
       tags=tags,
       this_tag=None,
       query=None,
-      base_url=base_url)
+      base_url=base_url,
+      formatTime=formatTime)
 
 class TagHandler(tornado.web.RequestHandler):
   @tornado.web.asynchronous
@@ -110,7 +120,8 @@ class TagHandler(tornado.web.RequestHandler):
       tags=tags,
       this_tag=tag,
       query=None,
-      base_url=base_url)
+      base_url=base_url,
+      formatTime=formatTime)
 
 
 class SearchHandler(tornado.web.RequestHandler):
@@ -129,15 +140,15 @@ class SearchHandler(tornado.web.RequestHandler):
     tags = getTags(update=False)
     tags = sorted(tags.iteritems(), cmp=lambda x,y:cmp(x[1],y[1]), reverse=True)
     self.render("blog.html", 
-      blog_posts=blog_posts, 
+      blog_posts=blog_posts,
       has_prev=has_prev, 
       has_next=has_next, 
       page=page, 
       tags=tags,
       this_tag=None,
       query=query,
-      num_posts=num_posts,
-      base_url=base_url)
+      base_url=base_url,
+      formatTime=formatTime)
 
 
 class UpdateHandler(tornado.web.RequestHandler):
@@ -149,6 +160,12 @@ class UpdateHandler(tornado.web.RequestHandler):
     print "all done"
     self.redirect('/')
 
+class ContactHandler(tornado.web.RequestHandler):
+  @tornado.web.asynchronous
+  def get(self):
+    self.render("contact.html")
+
+
 
 settings = {
   "template_path": "templates",
@@ -157,6 +174,7 @@ settings = {
 
 application = tornado.web.Application([
   (r"/update/?", UpdateHandler),
+  (r"/contact/?", ContactHandler),
   (r"/([0-9]*)", BlogHandler),
   (r"/tag/([^/]*)/?([0-9]*)", TagHandler),
   (r"/search/?([0-9]*)", SearchHandler),
@@ -165,5 +183,5 @@ application = tornado.web.Application([
 
 
 if __name__ == "__main__":
-  application.listen(3000)
+  application.listen(7000)
   tornado.ioloop.IOLoop.current().start()

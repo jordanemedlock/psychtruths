@@ -4,7 +4,24 @@
     <!-- Main Content -->
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3">
+            <div class="col-md-3">
+                {% for i in xrange(0,len(blog_posts)/2) %}
+                    <div class="row ad-row hidden-sm hidden-xs">
+                        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                        <!-- Left side ad -->
+
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-9538826511634757"
+                             data-ad-slot="9346187822"
+                             data-ad-format="auto"></ins>
+                        <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                {% end %}
+            </div>
+            <div class="col-md-6">
                 {% if query is not None %}
                     <div class="search-header">
                         {{ num_posts }} results for: {{ query }}
@@ -32,7 +49,7 @@
                         {% end %}
                     </ul>
                 </nav>
-                {% for post in blog_posts %}
+                {% for (i,post) in enumerate(blog_posts) %}
                     <div class="post-preview" id="{{ post['slug'] }}">
                         {% if post['type'] == 'text' %}
                             {% if post['title'] is not None %}
@@ -45,16 +62,23 @@
                             </p>
                         {% elif post['type'] == 'photo' %}
                             {% for photo in post['photos'] %}
-                                <img src="{{ photo['original_size']['url'] }}" />
+                                <a href="{{ photo['original_size']['url'] }}">
+                                    <img src="{{ photo['original_size']['url'] }}" class="img-responsive"/>
+                                </a>
+                                <p class="post-subtitle">
+                                    {% raw post['caption'] %}
+                                </p>
                             {% end %}
                         {% elif post['type'] == 'quote' %}
-                                {% raw post['source'] %}
+                            {% raw post['source'] %}
                         {% elif post['type'] == 'link' %}
                             <h2 class="post-title">
-                                {{ post['title'] }}
+                                <a href="{{ post['url'] }}">
+                                    {{ post['title'] }}
+                                </a>
                             </h2>
                             <p class="post-subtitle">
-                                {% raw post['excerpt'] %}
+                                {% raw (post['description'] or '') %}
                             </p>
                         {% elif post['type'] == 'chat' %}
                             <h2 class="post-title">
@@ -64,17 +88,23 @@
                                 {% raw post['body'] %}
                             </p>
                         {% elif post['type'] == 'answer' %}
+
                             <h2 class="post-title">
-                                {{ post['asking_name'] }}
+                                <a href="{{ post['asking_url'] }}">
+                                    {{ post['asking_name'] }}
+                                </a> asked:
                             </h2>
-                            <p class="post-subtitle">
+                            <blockquote>
                                 {% raw post['question'] %}
+                            </blockquote>
+                            <p>
+                                {% raw post['answer'] %}
                             </p>
                         {% else %}
                             {{ 'cant handle format', post['type'] }}
                         {% end %} <!-- Still missing, audio, video, answer-->
 
-                        <p class="post-meta">Posted by {{ post['blog_name'] }} on {{ post['date'] }}</p>
+                        <p class="post-meta">Posted by {{ post['blog_name'] }} on {{ formatTime(post['timestamp']) }}</p>
                         <p class="post-meta">Tags:
                             <ul class="tags list-inline">
                                 {% for tag in post['tags'] %}
@@ -85,6 +115,21 @@
                             </ul>
                         </p>
                     </div>
+                    {% if i % 3 == 2 %}
+                        <div class="row ad-row visible-sm visible-xs">
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- Left side ad -->
+
+                            <ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-9538826511634757"
+                                 data-ad-slot="9346187822"
+                                 data-ad-format="auto"></ins>
+                            <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div>
+                    {% end %}
                 {% end %}
                 <nav>
                     <ul class="pager">
@@ -111,31 +156,31 @@
                         Tags
                     </li>
                         {% for (tag,c) in tags %}
-                            
-                            {% if this_tag is not None and this_tag == tag%}
-                                <span class="nowrap">
+                            {% if c > 1 and tag not in ['psychology','psychtruths.com'] %}
+                                {% if this_tag is not None and this_tag == tag %}
+                                    <span class="nowrap">
+                                        <a href="/tag/{{ tag }}" class="btn btn-sm tag-btn">
+                                            {{ tag }} ({{ c }})
+                                        </a>
+                                        <a href="/" class="btn btn-sm">
+                                            <i class="glyphicon glyphicon-remove">
+                                            </i>
+                                        </a>
+                                    </span>
+                                {% else %}
                                     <a href="/tag/{{ tag }}" class="btn btn-sm tag-btn">
                                         {{ tag }} ({{ c }})
                                     </a>
-                                    <a href="/" class="btn btn-sm">
-                                        <i class="glyphicon glyphicon-remove">
-                                        </i>
-                                    </a>
-                                </span>
-                            {% else %}
-                                <a href="/tag/{{ tag }}" class="btn btn-sm tag-btn">
-                                    {{ tag }} ({{ c }})
-                                </a>
+                                {% end %}
                             {% end %}
                         {% end %}
-                    <hr>
                     <li>
                         Posts
                     </li>
                     {% for post in blog_posts %}
                         {% if 'title' in post and post['title'] is not None %}
                             <li>
-                                <a href="#{{ post['slug'] }}">
+                                <a href="#{{ post['slug'] }}" class="post-link">
                                     {{ post['title'] }}
                                 </a>
                             </li>
